@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- === TITRE DU SITE === -->
+    <title>SECURE_PASS_GEN BY GOKEN-0</title>
+    
+    <!-- === IMPORT POLICE D'ÉCRITURE === -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <!-- === FEUILLE DE STYLE PRINCIPALE === -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- === CANVAS POUR EFFET "MATRIX DIGITAL RAIN" EN ARRIÈRE-PLAN === -->
+    <canvas id="matrix-bg"></canvas>
+    
+    <!-- === LIGNE VERTICALE SCANLINE CRT (EFFET ÉCRAN OLD-SCHOOL) === -->
+    <div class="scanlines"></div>
+
+    <!-- === CONTENEUR GLOBAL DU SITE === -->
+    <div class="container">
+        
+        <!-- === EN-TÊTE AVEC TITRE GLITCH / SOUS-TITRE === -->
+        <header>
+            <!-- Effet glitch géré en CSS -->
+            <h1 class="glitch" data-text="SECURE_PASS_GEN">SECURE_PASS_GEN</h1>
+
+            <!-- Sous-titre cyberpunk -->
+            <h2 class="explicit-title">GÉNÉRATEUR DE MOTS DE PASSE HAUTE SÉCURITÉ</h2>
+
+            <!-- Indication de version et info “no logs” -->
+            <p class="subtitle">v1.0.4 // TRAITEMENT LOCAL // 0% LOGS</p>
+        </header>
+        
+        <!-- === FENÊTRE STYLE TERMINAL / SHELL === -->
+        <div class="terminal-window">
+            
+            <!-- === ZONE D'AFFICHAGE DU MOT DE PASSE GÉNÉRÉ === -->
+            <div class="result-container">
+                <span id="result">_WAITING_FOR_INPUT...</span>
+            </div>
+            
+            <!-- === INDICATEUR VISUEL DE SÉCURITÉ DU MOT DE PASSE === -->
+            <div class="security-indicator">
+                <div id="strength-bar" class="strength-bar"></div>
+            </div>
+
+            <!-- === PARAMÈTRES DU GÉNÉRATEUR === -->
+            <div class="controls">
+                
+                <!-- LONGUEUR DU MOT DE PASSE -->
+                <div class="setting">
+                    <label>> LONGUEUR_</label>
+                    <input type="number" id="length" min="4" max="50" value="16">
+                </div>
+                
+                <!-- MAJUSCULES -->
+                <div class="setting">
+                    <label>> MAJUSCULES [A-Z]_</label>
+                    <input type="checkbox" id="uppercase" checked>
+                </div>
+                
+                <!-- MINUSCULES -->
+                <div class="setting">
+                    <label>> MINUSCULES [a-z]_</label>
+                    <input type="checkbox" id="lowercase" checked>
+                </div>
+                
+                <!-- CHIFFRES -->
+                <div class="setting">
+                    <label>> CHIFFRES [0-9]_</label>
+                    <input type="checkbox" id="numbers" checked>
+                </div>
+                
+                <!-- SYMBOLES SPÉCIAUX -->
+                <div class="setting">
+                    <label>> SYMBOLES [#?!]_</label>
+                    <input type="checkbox" id="symbols" checked>
+                </div>
+            </div>
+
+            <!-- === BOUTONS D'ACTION PRINCIPAUX === -->
+            <div class="actions">
+                <!-- Génération du mot de passe -->
+                <button class="btn btn-generate" id="generate">GÉNÉRER LE MOT DE PASSE</button>
+
+                <!-- Copie vers presse-papiers -->
+                <button class="btn btn-copy" id="clipboard">COPIER</button>
+            </div>
+        </div>
+
+        <!-- === PIED DE PAGE CYBER / INFORMATIONS SYSTÈME === -->
+        <footer class="cyber-footer">
+            <div class="footer-content">
+
+                <!-- Crédit auteur avec lien GitHub -->
+                <p>DÉVELOPPÉ PAR 
+                    <a href="https://github.com/Goken-0" target="_blank" class="hacker-link">@Goken-0</a>
+                </p>
+                
+                <!-- Bloc d'informations sur la confidentialité -->
+                <p class="legal-text">
+
+                    <!-- Icône SVG de validation sécurité -->
+                    <span class="security-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                        </svg>
+                    </span>
+
+                    <!-- Texte de garantie : pas d'envoi de données -->
+                    SÉCURITÉ : Ce générateur fonctionne 100% hors-ligne dans votre navigateur. 
+                    Aucune donnée n'est envoyée vers un serveur.
+                </p>
+                
+                <!-- Indication du statut système (effet blink en CSS) -->
+                <p class="system-status">
+                    SYSTEM_STATUS: <span class="blink online">ONLINE</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- === SCRIPT JS PRINCIPAL : GÉNÉRATION + UI === -->
+    <script src="script.js"></script>
+</body>
+</html>

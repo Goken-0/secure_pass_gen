@@ -1,0 +1,351 @@
+/* =========================================
+   STYLE.CSS - L'HABILLAGE DU SITE
+   Ici, on décide des couleurs, des tailles
+   et de la disposition des éléments.
+   ========================================= */
+
+/* 1. LES VARIABLES (Notre palette de couleurs) */
+:root {
+    --bg-color: #050505;          /* Noir très profond */
+    --terminal-bg: #111;          /* Gris très foncé pour la fenêtre */
+    --text-main: #e0e0e0;         /* Blanc cassé pour le texte */
+    --accent-red: #d32f2f;        /* Rouge sombre (base) */
+    --accent-red-bright: #ff3333; /* Rouge vif (quand on survole) */
+    --terminal-green: #00ff41;    /* Vert Matrix (pour le succès) */
+    --font-stack: 'Share Tech Mono', monospace; /* La police d'écriture du site */
+}
+
+/* On remet tout à zéro pour partir sur de bonnes bases */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. LE STYLE GÉNÉRAL DE LA PAGE */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: var(--font-stack);
+    
+    /* On centre tout au milieu de l'écran */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Prend au moins toute la hauteur de l'écran */
+    overflow: hidden;  /* Empêche les barres de défilement */
+}
+
+/* 3. L'EFFET "VIEILLE TÉLÉ" (Lignes horizontales) */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Dégradé transparent pour faire les lignes */
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.2)
+    );
+    background-size: 100% 4px; /* Taille des lignes */
+    z-index: 999; /* Par-dessus tout le reste */
+    pointer-events: none; /* Laisse passer les clics de souris */
+    opacity: 0.6; /* Transparence */
+}
+
+/* La boite principale qui contient tout le site */
+.container {
+    width: 100%;
+    max-width: 500px; /* Pas plus large que 500px */
+    padding: 20px;
+    z-index: 1000;
+}
+
+/* 4. LE HAUT DE PAGE (TITRES) */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    color: var(--accent-red);
+    /* Petite ombre pour l'effet de profondeur */
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.1);
+    margin-bottom: 0;
+}
+
+/* Le titre explicite ("Générateur...") */
+.explicit-title {
+    font-size: 1rem;
+    color: #fff;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    border-bottom: 1px solid var(--accent-red);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* 5. LA FENÊTRE CENTRALE (Style Terminal) */
+.terminal-window {
+    background-color: var(--terminal-bg);
+    border: 1px solid #333;
+    padding: 25px;
+    /* Lueur rouge autour de la boite */
+    box-shadow: 0 0 20px rgba(211, 47, 47, 0.1);
+    position: relative;
+}
+
+/* Le petit texte "ROOT_ACCESS" en haut à gauche de la fenêtre */
+.terminal-window::before {
+    content: "ROOT_ACCESS";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: var(--bg-color);
+    padding: 0 5px;
+    font-size: 0.8rem;
+    color: var(--accent-red);
+}
+
+/* L'écran noir où s'affiche le mot de passe */
+.result-container {
+    background-color: #000;
+    border: 1px solid var(--accent-red);
+    padding: 15px;
+    margin-bottom: 5px;
+    word-break: break-all; /* Coupe le mot s'il est trop long */
+    min-height: 60px;
+    display: flex; /* Pour centrer le texte */
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+/* 6. LA BARRE DE PUISSANCE (Rouge -> Vert) */
+.security-indicator {
+    height: 4px;
+    background: #333;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.strength-bar {
+    height: 100%;
+    width: 0%; /* Au début c'est vide */
+    background: var(--accent-red);
+    transition: width 0.3s ease, background 0.3s ease; /* Animation fluide */
+}
+
+/* 7. LES RÉGLAGES (Inputs et Checkboxes) */
+.controls {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.setting {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #333; /* Ligne pointillée */
+    padding-bottom: 5px;
+}
+
+label {
+    font-size: 1.1rem;
+}
+
+/* La case pour choisir le nombre */
+input[type="number"] {
+    background: transparent;
+    border: 1px solid #555;
+    color: var(--accent-red);
+    font-family: var(--font-stack);
+    padding: 5px;
+    width: 60px;
+    text-align: center;
+}
+
+/* On personnalise les cases à cocher pour faire "Rétro" */
+input[type="checkbox"] {
+    appearance: none; /* On enlève le style par défaut du navigateur */
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--text-main);
+    background: transparent;
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+}
+
+/* Le petit "X" quand on coche la case */
+input[type="checkbox"]::before {
+    content: "X";
+    color: var(--accent-red);
+    font-size: 1rem;
+    transform: scale(0); /* Caché par défaut */
+    transition: 0.1s transform ease-in-out;
+}
+
+input[type="checkbox"]:checked::before {
+    transform: scale(1); /* Visible quand coché */
+}
+
+/* 8. LES GROS BOUTONS D'ACTION */
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    font-family: var(--font-stack);
+    font-size: 1.1rem;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+/* Bouton "Générer" (Rouge) */
+.btn-generate {
+    flex: 2; /* Il prend plus de place que l'autre */
+    background-color: var(--accent-red);
+    color: black;
+    font-weight: bold;
+}
+
+.btn-generate:hover {
+    background-color: var(--accent-red-bright);
+    box-shadow: 2px 2px 0px #fff; /* Effet de relief */
+    transform: translate(-2px, -2px); /* Il bouge un peu */
+}
+
+/* Bouton "Copier" (Transparent) */
+.btn-copy {
+    flex: 1;
+    background-color: transparent;
+    border: 1px solid var(--text-main);
+    color: var(--text-main);
+}
+
+.btn-copy:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* 9. LE PIED DE PAGE (Footer) */
+.cyber-footer {
+    margin-top: 30px;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.hacker-link {
+    color: var(--terminal-green);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+}
+
+.hacker-link:hover {
+    border-bottom: 1px solid var(--terminal-green);
+    text-shadow: 0 0 8px var(--terminal-green);
+}
+
+.legal-text {
+    margin: 10px 0;
+    font-size: 0.75rem;
+    color: #555;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Style de l'icône Bouclier (SVG) */
+.security-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+    position: relative;
+}
+
+.security-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--accent-red); 
+    filter: drop-shadow(0 0 6px var(--accent-red)); /* Lueur néon */
+    transition: all 0.3s ease;
+}
+
+/* Quand on passe la souris sur le texte légal, l'icône brille plus fort */
+.legal-text:hover .security-icon svg {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 10px var(--accent-red-bright));
+}
+
+.system-status {
+    font-family: monospace;
+    margin-top: 15px;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+}
+
+.online {
+    color: var(--terminal-green);
+    font-weight: bold;
+}
+
+/* 10. LES ANIMATIONS ET FONDS SPÉCIAUX */
+
+/* Animation de clignotement simple */
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+/* Effet glitch (bug) sur le gros titre au survol */
+.glitch:hover {
+    animation: glitch-anim 0.3s infinite;
+}
+
+@keyframes glitch-anim {
+    0% { transform: translate(0) }
+    20% { transform: translate(-2px, 2px) }
+    40% { transform: translate(-2px, -2px) }
+    60% { transform: translate(2px, 2px) }
+    80% { transform: translate(2px, -2px) }
+    100% { transform: translate(0) }
+}
+
+/* Le fond animé (Pluie de code) - géré par le Javascript */
+#matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Derrière tout le reste */
+    background: #000;
+    opacity: 0.2; /* Très discret */
+}
