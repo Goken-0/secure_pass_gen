@@ -63,7 +63,7 @@ boutonCopier.addEventListener('click', () => {
     
     // Petit effet visuel pour dire "C'est copié !"
     const texteOriginal = boutonCopier.innerText;
-    boutonCopier.innerText = 'COPIED!';
+    boutonCopier.innerText = 'COPIÉ!';
     boutonCopier.style.color = '#00ff41'; // Vert
 
     // On remet le bouton normal après 1 seconde et demie (1500ms)
@@ -190,4 +190,5 @@ function dessinerMatrice() {
 }
 
 // On lance l'animation (80ms = vitesse lente)
+
 setInterval(dessinerMatrice, 80);
