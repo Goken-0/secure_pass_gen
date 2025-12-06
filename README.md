@@ -71,9 +71,13 @@ cd secure_pass_gen
 
 ```bash
 /
-├── index.html   # Structure et contenu (Sémantique & Accessibilité)
-├── style.css    # Design complet (Variables CSS, Flexbox, Grid, Animations)
-└── script.js    # Logique (Génération, DOM Manipulation, Canvas Matrix)
+├── index.html             # La page principale (Structure & Contenu)
+├── style.css              # Le design complet (Thème Cyberpunk, Animations)
+├── script.js              # Le cerveau (Logique de génération, Sécurité, Canvas Matrix)
+├── README.md              # La documentation que tu es en train de lire
+├── site.webmanifest       # Fichier de configuration pour l'installation sur mobile (PWA)
+├── favicon.ico            # L'icône classique pour les navigateurs
+└── *.png (android/apple/favicon) # Pack complet d'icônes HD pour tous les appareils (iOS, Android...)
 ```
 
 ## 🤝 Contribuer
