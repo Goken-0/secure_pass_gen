@@ -106,26 +106,32 @@ function fabriquerMotDePasse(options, longueur) {
 function calculerForce(mdp) {
     let point = 0;
     
-    // On donne des points selon la qualité du mot de passe
-    if (mdp.length >= 8) point++;           // Assez long
-    if (mdp.length >= 12) point++;          // Très long
-    if (/[A-Z]/.test(mdp)) point++;         // Contient majuscule
-    if (/[0-9]/.test(mdp)) point++;         // Contient chiffre
-    if (/[^A-Za-z0-9]/.test(mdp)) point++;  // Contient symbole
+    // On garde le système de points juste pour la LARGEUR de la barre
+    if (mdp.length >= 8) point++;           
+    if (mdp.length >= 12) point++;          
+    if (/[A-Z]/.test(mdp)) point++;         
+    if (/[0-9]/.test(mdp)) point++;         
+    if (/[^A-Za-z0-9]/.test(mdp)) point++;  
 
-    // On transforme les points en pourcentage pour la largeur de la barre
+    // Calcul de la largeur (remplissage visuel)
     const largeur = (point / 5) * 100;
     barreSecurite.style.width = `${largeur}%`;
     
-    // On change la couleur selon le score
-    if (point <= 8) {
-        barreSecurite.style.backgroundColor = '#d32f2f'; // Rouge (Nul)
+    // --- GESTION DES COULEURS (SELON LA LONGUEUR) ---
+    
+    if (mdp.length < 8) {
+        // Moins de 8 caractères : ROUGE
+        barreSecurite.style.backgroundColor = '#d32f2f'; 
         barreSecurite.style.boxShadow = '0 0 10px #d32f2f';
-    } else if (point <= 11) {
-        barreSecurite.style.backgroundColor = '#ffa000'; // Orange (Moyen)
+
+    } else if (mdp.length <= 12) {
+        // Entre 8 et 12 caractères (inclus) : ORANGE
+        barreSecurite.style.backgroundColor = '#ffa000'; 
         barreSecurite.style.boxShadow = '0 0 10px #ffa000';
+
     } else {
-        barreSecurite.style.backgroundColor = '#00ff41'; // Vert (Top)
+        // Plus de 12 caractères (donc 13 et +) : VERT
+        barreSecurite.style.backgroundColor = '#00ff41'; 
         barreSecurite.style.boxShadow = '0 0 10px #00ff41';
     }
 }
@@ -192,4 +198,5 @@ function dessinerMatrice() {
 // On lance l'animation (80ms = vitesse lente)
 
 setInterval(dessinerMatrice, 80);
+
 
