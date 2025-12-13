@@ -124,7 +124,7 @@ function calculerForce(mdp) {
         barreSecurite.style.backgroundColor = '#d32f2f'; 
         barreSecurite.style.boxShadow = '0 0 10px #d32f2f';
 
-    } else if (mdp.length <= 12) {
+    } else if (mdp.length <= 11) {
         // Entre 8 et 12 caractères (inclus) : ORANGE
         barreSecurite.style.backgroundColor = '#ffa000'; 
         barreSecurite.style.boxShadow = '0 0 10px #ffa000';
@@ -198,5 +198,6 @@ function dessinerMatrice() {
 // On lance l'animation (80ms = vitesse lente)
 
 setInterval(dessinerMatrice, 80);
+
 
 
