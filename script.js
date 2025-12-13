@@ -118,10 +118,10 @@ function calculerForce(mdp) {
     barreSecurite.style.width = `${largeur}%`;
     
     // On change la couleur selon le score
-    if (point <= 2) {
+    if (point <= 8) {
         barreSecurite.style.backgroundColor = '#d32f2f'; // Rouge (Nul)
         barreSecurite.style.boxShadow = '0 0 10px #d32f2f';
-    } else if (point <= 4) {
+    } else if (point <= 11) {
         barreSecurite.style.backgroundColor = '#ffa000'; // Orange (Moyen)
         barreSecurite.style.boxShadow = '0 0 10px #ffa000';
     } else {
@@ -192,3 +192,4 @@ function dessinerMatrice() {
 // On lance l'animation (80ms = vitesse lente)
 
 setInterval(dessinerMatrice, 80);
+
