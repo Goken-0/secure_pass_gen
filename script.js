@@ -125,12 +125,12 @@ function calculerForce(mdp) {
         barreSecurite.style.boxShadow = '0 0 10px #d32f2f';
 
     } else if (mdp.length <= 11) {
-        // Entre 8 et 12 caractères (inclus) : ORANGE
+        // Entre 8 et 11 caractères : ORANGE
         barreSecurite.style.backgroundColor = '#ffa000'; 
         barreSecurite.style.boxShadow = '0 0 10px #ffa000';
 
     } else {
-        // Plus de 12 caractères (donc 13 et +) : VERT
+        // Plus de 12 caractères (12 inclu) : VERT
         barreSecurite.style.backgroundColor = '#00ff41'; 
         barreSecurite.style.boxShadow = '0 0 10px #00ff41';
     }
@@ -198,6 +198,7 @@ function dessinerMatrice() {
 // On lance l'animation (80ms = vitesse lente)
 
 setInterval(dessinerMatrice, 80);
+
 
 
 
