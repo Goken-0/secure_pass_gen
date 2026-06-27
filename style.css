@@ -136,11 +136,118 @@ h1 {
     color: #fff;
 }
 
+/* 5b. LES ONGLETS (GÉNÉRER / TESTER) */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-family: var(--font-stack);
+    font-size: 1rem;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tab-btn:hover {
+    color: var(--text-main);
+    border-color: #555;
+}
+.tab-btn.active {
+    color: var(--accent-red);
+    border-color: var(--accent-red);
+    box-shadow: 0 0 8px rgba(211, 47, 47, 0.3);
+}
+
+/* Un panneau caché par défaut, visible si .active */
+.panel {
+    display: none;
+}
+.panel.active {
+    display: block;
+}
+
+/* Champ de saisie du testeur */
+.test-input-row {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 15px;
+    position: relative;
+}
+#test-input {
+    width: 100%;
+    background: #000;
+    border: 1px solid var(--accent-red);
+    color: #fff;
+    font-family: var(--font-stack);
+    font-size: 1.1rem;
+    padding: 15px;
+    padding-right: 50px; /* place pour le bouton œil */
+}
+#test-input::placeholder {
+    color: #555;
+}
+
+/* Bouton œil afficher/masquer */
+.eye-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+}
+.eye-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--accent-red);
+    transition: fill 0.2s, filter 0.2s;
+}
+.eye-btn:hover svg {
+    fill: var(--accent-red-bright);
+    filter: drop-shadow(0 0 5px var(--accent-red-bright));
+}
+/* Par défaut (masqué) : on montre l'œil ouvert, on cache l'œil barré */
+.eye-btn .eye-closed { display: none; }
+/* Quand visible : on inverse */
+.eye-btn.revealed .eye-open   { display: none; }
+.eye-btn.revealed .eye-closed { display: block; }
+
+/* Liste des critères de sécurité */
+.checks-list {
+    list-style: none;
+    margin: 0 0 15px 0;
+    padding: 0;
+    font-size: 0.95rem;
+}
+.checks-list li {
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.checks-list li.ok    { color: var(--terminal-green); }
+.checks-list li.fail  { color: var(--accent-red); }
+.checks-list li::before {
+    content: "[ ]";
+    font-weight: bold;
+}
+.checks-list li.ok::before   { content: "[x]"; }
+.checks-list li.fail::before { content: "[!]"; }
+
 /* 6. LA BARRE DE PUISSANCE (Rouge -> Vert) */
 .security-indicator {
     height: 4px;
     background: #333;
-    margin-bottom: 20px;
+    margin-bottom: 6px;
     width: 100%;
 }
 .strength-bar {
@@ -148,6 +255,85 @@ h1 {
     width: 0%; /* Au début c'est vide */
     background: var(--accent-red);
     transition: width 0.3s ease, background 0.3s ease; /* Animation fluide */
+}
+
+/* Ligne d'info sous la barre : libellé de force + entropie en bits */
+.strength-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    min-height: 1em;
+}
+#strength-label {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+#strength-entropy {
+    color: #888;
+}
+
+/* Annotation recommandation CNIL */
+.cnil-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    width: max-content;       /* la boîte s'étire au contenu */
+    max-width: none;          /* autorisé à dépasser la largeur du générateur */
+    /* Centré sur l'axe horizontal même si plus large que le conteneur :
+       on déborde alors symétriquement à gauche et à droite. */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px;
+    font-size: 0.95rem;
+    color: #bbb;
+    background: rgba(211, 47, 47, 0.06);
+    border: 1px solid rgba(211, 47, 47, 0.25);
+    border-radius: 2px;
+    padding: 10px 14px;
+}
+.cnil-note strong {
+    color: var(--text-main);
+}
+/* Badge texte CNIL */
+.cnil-tag {
+    flex-shrink: 0;
+    background: var(--accent-red);
+    color: #000;
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 2px;
+}
+/* Bouton lien externe vers la source */
+.cnil-source {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--terminal-green);
+    border-radius: 2px;
+    color: var(--terminal-green);
+    transition: all 0.2s;
+}
+.cnil-source svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+.cnil-source:hover {
+    background: var(--terminal-green);
+    color: #000;
+    box-shadow: 0 0 10px var(--terminal-green);
 }
 
 /* 7. LES RÉGLAGES (Inputs et Checkboxes) */

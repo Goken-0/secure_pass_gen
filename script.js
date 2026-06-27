@@ -14,6 +14,21 @@ const caseSymbole   = document.getElementById('symbols');
 const boutonGenerer = document.getElementById('generate');
 const boutonCopier  = document.getElementById('clipboard');
 const barreSecurite = document.getElementById('strength-bar');
+const labelForce    = document.getElementById('strength-label');
+const labelEntropie = document.getElementById('strength-entropy');
+
+// Éléments du panneau "TESTER"
+const champTest        = document.getElementById('test-input');
+const barreTest        = document.getElementById('test-strength-bar');
+const labelForceTest   = document.getElementById('test-strength-label');
+const labelEntropieTest= document.getElementById('test-strength-entropy');
+const listeChecks      = document.getElementById('test-checks');
+
+// --- LES JEUX DE CARACTÈRES (un seul endroit pour tout définir) ---
+const MINUSCULES = 'abcdefghijklmnopqrstuvwxyz';
+const MAJUSCULES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const CHIFFRES   = '0123456789';
+const SYMBOLES   = '!@#$%^&*(){}[]=<>/,.';
 
 // --- 2. QUAND ON CLIQUE SUR "GÉNÉRER" ---
 boutonGenerer.addEventListener('click', () => {
@@ -27,10 +42,10 @@ boutonGenerer.addEventListener('click', () => {
         longueurvoulue = 50;
         champLongueur.value = 50; 
     }
-    // Si c'est trop petit ou vide, on force à 4 caractères
-    if (longueurvoulue < 4 || isNaN(longueurvoulue)) {
-        longueurvoulue = 4;
-        champLongueur.value = 4;
+    // Si c'est trop petit ou vide, on force à 12 (minimum recommandé par la CNIL)
+    if (longueurvoulue < 12 || isNaN(longueurvoulue)) {
+        longueurvoulue = 12;
+        champLongueur.value = 12;
     }
 
     // On vérifie quelles cases sont cochées (vrai ou faux)
@@ -43,12 +58,25 @@ boutonGenerer.addEventListener('click', () => {
 
     // On lance la fabrication du mot de passe
     const motDePasse = fabriquerMotDePasse(options, longueurvoulue);
-    
+
     // On affiche le résultat sur la page
     ecranResultat.innerText = motDePasse;
-    
-    // On met à jour la barre de couleur (rouge/orange/vert)
-    calculerForce(motDePasse);
+
+    // Taille du "pool" de caractères possibles d'après les options cochées.
+    // C'est CE chiffre qui détermine la vraie force (pas juste la longueur).
+    let taillePool = 0;
+    if (options.minuscule) taillePool += MINUSCULES.length;
+    if (options.majuscule) taillePool += MAJUSCULES.length;
+    if (options.chiffre)   taillePool += CHIFFRES.length;
+    if (options.symbole)   taillePool += SYMBOLES.length;
+
+    // On met à jour la barre selon l'entropie réelle
+    const entropie = motDePasse.length * Math.log2(taillePool);
+    rendreForce(entropie, {
+        barre: barreSecurite,
+        label: labelForce,
+        entropie: labelEntropie
+    });
 });
 
 // --- 3. QUAND ON CLIQUE SUR "COPIER" ---
@@ -73,85 +101,168 @@ boutonCopier.addEventListener('click', () => {
     }, 1500);
 });
 
-// --- 4. LA RECETTE DE FABRICATION DU MOT DE PASSE ---
+// --- 4. HASARD SÉCURISÉ (le cœur de la sécurité) ---
+// Math.random() est PRÉVISIBLE : interdit pour de la crypto.
+// On utilise crypto.getRandomValues() (vrai générateur sécurisé du navigateur).
+// Rejet d'échantillon ("rejection sampling") pour éviter le biais modulo :
+// sans ça, les premiers caractères du jeu sortiraient un peu plus souvent.
+function hasardSecurise(max) {
+    const limite = Math.floor(0x100000000 / max) * max;
+    const tampon = new Uint32Array(1);
+    let valeur;
+    do {
+        crypto.getRandomValues(tampon);
+        valeur = tampon[0];
+    } while (valeur >= limite);
+    return valeur % max;
+}
+
+// --- LA RECETTE DE FABRICATION DU MOT DE PASSE ---
 function fabriquerMotDePasse(options, longueur) {
-    let resultat = '';
-    
-    // On regarde quels types de caractères on a le droit d'utiliser
-    // Exemple : si on veut que des chiffres, on ne garde que la fonction 'chiffre'
-    const typesDisponibles = [];
-    if (options.minuscule) typesDisponibles.push(donneUneMinuscule);
-    if (options.majuscule) typesDisponibles.push(donneUneMajuscule);
-    if (options.chiffre)   typesDisponibles.push(donneUnChiffre);
-    if (options.symbole)   typesDisponibles.push(donneUnSymbole);
+    // On rassemble les jeux de caractères des cases cochées
+    const ensembles = [];
+    if (options.minuscule) ensembles.push(MINUSCULES);
+    if (options.majuscule) ensembles.push(MAJUSCULES);
+    if (options.chiffre)   ensembles.push(CHIFFRES);
+    if (options.symbole)   ensembles.push(SYMBOLES);
 
     // Si aucune case n'est cochée, on prévient l'utilisateur
-    if (typesDisponibles.length === 0) return 'SELECT_OPTION_REQUIRED';
+    if (ensembles.length === 0) return 'SELECT_OPTION_REQUIRED';
 
-    // On boucle autant de fois que la longueur demandée
-    // À chaque tour, on ajoute des caractères
-    for (let i = 0; i < longueur; i += typesDisponibles.length) {
-        typesDisponibles.forEach(fonction => {
-            resultat += fonction();
-        });
+    // Le "pool" = tous les caractères autorisés réunis
+    const pool = ensembles.join('');
+    const caracteres = [];
+
+    // 1) On garantit AU MOINS un caractère de chaque type coché
+    //    (tant qu'il reste de la place dans la longueur demandée)
+    for (const jeu of ensembles) {
+        if (caracteres.length < longueur) {
+            caracteres.push(jeu[hasardSecurise(jeu.length)]);
+        }
     }
 
-    // On coupe pour avoir la longueur exacte et on mélange tout
-    // Le mélange sert à ce que l'ordre ne soit pas prévisible
-    const motDePasseFinal = resultat.slice(0, longueur);
-    return motDePasseFinal.split('').sort(() => 0.5 - Math.random()).join('');
+    // 2) On remplit le reste en tirant indépendamment dans le pool complet
+    while (caracteres.length < longueur) {
+        caracteres.push(pool[hasardSecurise(pool.length)]);
+    }
+
+    // 3) Mélange Fisher-Yates (vrai mélange uniforme, contrairement à sort(random))
+    //    Sinon les caractères garantis resteraient toujours au début.
+    for (let i = caracteres.length - 1; i > 0; i--) {
+        const j = hasardSecurise(i + 1);
+        [caracteres[i], caracteres[j]] = [caracteres[j], caracteres[i]];
+    }
+
+    return caracteres.join('');
 }
 
-// --- 5. LA BARRE DE PUISSANCE (Rouge / Orange / Vert) ---
-function calculerForce(mdp) {
-    let point = 0;
-    
-    // On garde le système de points juste pour la LARGEUR de la barre
-    if (mdp.length >= 8) point++;           
-    if (mdp.length >= 12) point++;          
-    if (/[A-Z]/.test(mdp)) point++;         
-    if (/[0-9]/.test(mdp)) point++;         
-    if (/[^A-Za-z0-9]/.test(mdp)) point++;  
+// --- 5. LA BARRE DE PUISSANCE (basée sur l'ENTROPIE réelle) ---
+// Entropie en bits = longueur × log2(taille du pool).
+// Elle reflète À LA FOIS la longueur ET la variété de caractères.
+// Fonction réutilisée par le générateur ET par le testeur, d'où le paramètre
+// "els" qui pointe vers les bons éléments HTML (barre / label / entropie).
+function rendreForce(entropie, els) {
+    // Cas vide / état initial : on remet la barre à zéro
+    if (!entropie || !isFinite(entropie)) {
+        els.barre.style.width = '0%';
+        els.barre.style.boxShadow = 'none';
+        els.label.innerText = '';
+        els.entropie.innerText = '';
+        return;
+    }
 
-    // Calcul de la largeur (remplissage visuel)
-    const largeur = (point / 5) * 100;
-    barreSecurite.style.width = `${largeur}%`;
-    
-    // --- GESTION DES COULEURS (SELON LA LONGUEUR) ---
-    
-    if (mdp.length < 8) {
-        // Moins de 8 caractères : ROUGE
-        barreSecurite.style.backgroundColor = '#d32f2f'; 
-        barreSecurite.style.boxShadow = '0 0 10px #d32f2f';
+    // Largeur : on plafonne à 100 bits = barre pleine
+    els.barre.style.width = `${Math.min(entropie, 100)}%`;
 
-    } else if (mdp.length <= 11) {
-        // Entre 8 et 11 caractères : ORANGE
-        barreSecurite.style.backgroundColor = '#ffa000'; 
-        barreSecurite.style.boxShadow = '0 0 10px #ffa000';
-
+    // Seuils de force (recommandations courantes de sécurité)
+    let couleur, libelle;
+    if (entropie < 40) {
+        couleur = '#d32f2f'; libelle = 'FAIBLE';        // rouge
+    } else if (entropie < 60) {
+        couleur = '#ffa000'; libelle = 'MOYEN';         // orange
+    } else if (entropie < 80) {
+        couleur = '#ffe000'; libelle = 'FORT';          // jaune
     } else {
-        // Plus de 12 caractères (12 inclu) : VERT
-        barreSecurite.style.backgroundColor = '#00ff41'; 
-        barreSecurite.style.boxShadow = '0 0 10px #00ff41';
+        couleur = '#00ff41'; libelle = 'EXCELLENT';     // vert
     }
+
+    els.barre.style.backgroundColor = couleur;
+    els.barre.style.boxShadow = `0 0 10px ${couleur}`;
+    els.label.style.color = couleur;
+    els.label.innerText = libelle;
+    els.entropie.innerText = `${Math.round(entropie)} bits`;
 }
 
-// --- 6. PETITES FONCTIONS UTILES (Les ingrédients) ---
-// Ces fonctions tirent un caractère au hasard dans la table ASCII (le code des ordis)
+// --- 6b. LES ONGLETS (bascule Générer / Tester) ---
+const boutonsOnglet = document.querySelectorAll('.tab-btn');
+const panneaux = document.querySelectorAll('.panel');
 
-function donneUneMinuscule() {
-    return String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+boutonsOnglet.forEach(bouton => {
+    bouton.addEventListener('click', () => {
+        // On enlève "active" partout, puis on l'ajoute sur le bon onglet/panneau
+        boutonsOnglet.forEach(b => b.classList.remove('active'));
+        panneaux.forEach(p => p.classList.remove('active'));
+        bouton.classList.add('active');
+        document.getElementById('panel-' + bouton.dataset.tab).classList.add('active');
+    });
+});
+
+// --- 6c. L'ANALYSEUR DE MOT DE PASSE (onglet TESTER) ---
+// Estime la force par l'entropie = longueur × log2(taille du pool des types présents),
+// puis vérifie les critères de la CNIL.
+function analyserMotDePasse(mdp) {
+    // Champ vide : on remet tout à zéro
+    if (!mdp) {
+        rendreForce(0, { barre: barreTest, label: labelForceTest, entropie: labelEntropieTest });
+        listeChecks.innerHTML = '';
+        return;
+    }
+
+    // Quels types de caractères sont présents ?
+    const aMinuscule = /[a-z]/.test(mdp);
+    const aMajuscule = /[A-Z]/.test(mdp);
+    const aChiffre   = /[0-9]/.test(mdp);
+    const aSymbole   = /[^A-Za-z0-9]/.test(mdp);
+    const nbTypes = aMinuscule + aMajuscule + aChiffre + aSymbole;
+
+    // Taille du pool = somme des jeux détectés (33 ≈ symboles ASCII imprimables)
+    let taillePool = 0;
+    if (aMinuscule) taillePool += 26;
+    if (aMajuscule) taillePool += 26;
+    if (aChiffre)   taillePool += 10;
+    if (aSymbole)   taillePool += 33;
+
+    const entropie = mdp.length * Math.log2(taillePool);
+
+    // Barre + label
+    rendreForce(entropie, { barre: barreTest, label: labelForceTest, entropie: labelEntropieTest });
+
+    // Liste des critères (reco CNIL : ≥ 12 caractères ET 4 types)
+    const criteres = [
+        { ok: mdp.length >= 12,      texte: `Au moins 12 caractères (actuel : ${mdp.length})` },
+        { ok: aMajuscule,            texte: 'Contient des MAJUSCULES' },
+        { ok: aMinuscule,            texte: 'Contient des minuscules' },
+        { ok: aChiffre,              texte: 'Contient des chiffres' },
+        { ok: aSymbole,              texte: 'Contient des symboles' },
+        { ok: nbTypes === 4,         texte: 'Les 4 types de caractères présents (CNIL)' }
+    ];
+    listeChecks.innerHTML = criteres
+        .map(c => `<li class="${c.ok ? 'ok' : 'fail'}">${c.texte}</li>`)
+        .join('');
 }
-function donneUneMajuscule() {
-    return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
-}
-function donneUnChiffre() {
-    return String.fromCharCode(Math.floor(Math.random() * 10) + 48);
-}
-function donneUnSymbole() {
-    const listeSymboles = '!@#$%^&*(){}[]=<>/,.';
-    return listeSymboles[Math.floor(Math.random() * listeSymboles.length)];
-}
+
+// On analyse à chaque frappe dans le champ de test
+champTest.addEventListener('input', () => analyserMotDePasse(champTest.value));
+
+// Bouton œil : bascule entre mot de passe masqué (•••) et visible
+const boutonOeil = document.getElementById('toggle-visibility');
+boutonOeil.addEventListener('click', () => {
+    const visible = champTest.type === 'text';
+    champTest.type = visible ? 'password' : 'text';
+    boutonOeil.classList.toggle('revealed', !visible);
+    boutonOeil.setAttribute('aria-pressed', String(!visible));
+    boutonOeil.setAttribute('aria-label', visible ? 'Afficher le mot de passe' : 'Masquer le mot de passe');
+});
 
 // --- 7. L'ANIMATION DE FOND (Pluie de code) ---
 // Note : Cette partie sert juste à faire joli, ça ne change pas la sécurité.

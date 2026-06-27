@@ -46,7 +46,16 @@
         
         <!-- === FENÊTRE STYLE TERMINAL / SHELL === -->
         <div class="terminal-window">
-            
+
+            <!-- === ONGLETS : GÉNÉRER / TESTER === -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="generate">> GÉNÉRER</button>
+                <button class="tab-btn" data-tab="test">> TESTER</button>
+            </div>
+
+            <!-- ============ PANNEAU GÉNÉRATEUR ============ -->
+            <div id="panel-generate" class="panel active">
+
             <!-- === ZONE D'AFFICHAGE DU MOT DE PASSE GÉNÉRÉ === -->
             <div class="result-container">
                 <span id="result">_WAITING_FOR_INPUT...</span>
@@ -57,15 +66,21 @@
                 <div id="strength-bar" class="strength-bar"></div>
             </div>
 
+            <!-- Texte de force + entropie estimée -->
+            <div class="strength-info">
+                <span id="strength-label"></span>
+                <span id="strength-entropy"></span>
+            </div>
+
             <!-- === PARAMÈTRES DU GÉNÉRATEUR === -->
             <div class="controls">
                 
-                <!-- LONGUEUR DU MOT DE PASSE -->
+                <!-- LONGUEUR DU MOT DE PASSE (min 12 = reco CNIL) -->
                 <div class="setting">
                     <label>> LONGUEUR_</label>
-                    <input type="number" id="length" min="4" max="50" value="16">
+                    <input type="number" id="length" min="12" max="50" value="16">
                 </div>
-                
+
                 <!-- MAJUSCULES -->
                 <div class="setting">
                     <label>> MAJUSCULES [A-Z]_</label>
@@ -99,7 +114,55 @@
                 <!-- Copie vers presse-papiers -->
                 <button class="btn btn-copy" id="clipboard">COPIER</button>
             </div>
+
+            </div><!-- /panel-generate -->
+
+            <!-- ============ PANNEAU TESTEUR ============ -->
+            <div id="panel-test" class="panel">
+
+                <!-- Champ de saisie du mot de passe à analyser -->
+                <div class="setting test-input-row">
+                    <input type="password" id="test-input" placeholder="> COLLEZ_VOTRE_MOT_DE_PASSE_ICI" autocomplete="off" spellcheck="false">
+                    <!-- Bouton œil : afficher / masquer le mot de passe -->
+                    <button type="button" id="toggle-visibility" class="eye-btn" aria-label="Afficher le mot de passe" aria-pressed="false">
+                        <!-- Œil ouvert (état masqué : cliquer pour voir) -->
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+                        </svg>
+                        <!-- Œil barré (état visible : cliquer pour masquer) -->
+                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M2 4.27L3.28 3 21 20.72 19.73 22l-3.1-3.1A11.9 11.9 0 0112 19C5 19 2 12 2 12a18 18 0 014.06-5.39L2 4.27zM12 7a5 5 0 015 5c0 .65-.13 1.27-.36 1.83l-2.47-2.47A3 3 0 0012 9c-.12 0-.24.01-.36.03L9.17 6.56A5 5 0 0112 7zm-5.39.39L8.7 9.5A5 5 0 0012 17a4.9 4.9 0 002.5-.68l1.66 1.66A11.9 11.9 0 0112 19C5 19 2 12 2 12a18 18 0 014.61-4.61z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Barre de force (même logique d'entropie que le générateur) -->
+                <div class="security-indicator">
+                    <div id="test-strength-bar" class="strength-bar"></div>
+                </div>
+                <div class="strength-info">
+                    <span id="test-strength-label"></span>
+                    <span id="test-strength-entropy"></span>
+                </div>
+
+                <!-- Liste de vérifications (critères CNIL) -->
+                <ul id="test-checks" class="checks-list"></ul>
+            </div><!-- /panel-test -->
         </div>
+
+        <!-- === ANNOTATION RECOMMANDATION CNIL (hors terminal) === -->
+        <p class="cnil-note">
+            <span class="cnil-tag">CNIL</span>
+            Minimum recommandé : <strong>12 caractères</strong> avec minuscules, majuscules, chiffres et caractères spéciaux.
+            <!-- Bouton lien externe vers la source officielle -->
+            <a href="https://www.cnil.fr/fr/mots-de-passe-recommandations-pour-maitriser-sa-securite"
+               target="_blank" rel="noopener" class="cnil-source" aria-label="Voir la source CNIL (nouvel onglet)" title="Voir la source officielle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M14 3v2h3.59l-9.3 9.29 1.42 1.42L19 6.41V10h2V3h-7z"/>
+                    <path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7z"/>
+                </svg>
+            </a>
+        </p>
 
         <!-- === PIED DE PAGE CYBER / INFORMATIONS SYSTÈME === -->
         <footer class="cyber-footer">
